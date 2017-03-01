@@ -1,0 +1,135 @@
+---
+title: "STA221"
+author: "Neil Montgomery"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  beamer_presentation:
+    keep_tex: TRUE
+    incremental: TRUE
+    df_print: tibble
+    fig_caption: FALSE
+classoption: aspectratio=169
+header-includes:
+- \newcommand{\ve}{\varepsilon}
+- \newcommand{\dbar}[1]{\overline{\overline{#1}}}
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE,
+                      dev='pdf', fig.width=5, fig.asp=0.618, fig.align='center')
+options(tibble.width=70, scipen = 999, tibble.print_min=5, show.signif.stars = FALSE)
+library(tidyverse)
+library(readxl)
+source("multiplot.R")
+```
+
+## One factor notation, models
+
+"Balanced" case with equal sample size $n$ for each of $k$ levels for $N = nk$ total.
+
+Levels:    |  1  |  2  | ... |  i  | ... |  k  |
+:---------|:---:|:---:|:---:|:---:|:---:|:---:|
+&nbsp;    | $y_{11}$ | $y_{21}$ | ... | $y_{i1}$ | ... | $y_{k1}$ |
+&nbsp;    | $y_{12}$ | $y_{22}$ | ... | $y_{i2}$ | ... | $y_{k2}$ |
+&nbsp;    | $\vdots$ | $\vdots$ | &nbsp; | $\vdots$ |&nbsp; | $\vdots$  |
+&nbsp;    | $y_{1n}$ | $y_{2n}$ | ... | $y_{in}$ | ... | $y_{kn}$ |
+Sample average: | $\overline y_{1}$ | $\overline y_{2}$ | ... | $\overline y_{i}$ | ... | $\overline y_{k}$ |
+
+Grand overall average: $\dbar{y}$
+
+Models:
+$$y_{ij} = \mu_i + \ve_{ij}, \qquad \ve_{ij} \text{ i.i.d. } N(0, \sigma^2)$$
+$$y_{ij}= \mu + \alpha_i + \ve_{ij}, \qquad \sum \alpha_i = 0 \qquad \ve_{ij} \text{ i.i.d. } N(0, \sigma^2)$$
+
+## groups that are clearly different
+
+From Q26.7 "Activating baking yeast".
+
+```{r}
+yeast <- read.csv("Ch28_Activating_yeast.csv")
+yeast %>% 
+  ggplot(aes(x=Recipe, y=Activation.Times)) + geom_boxplot()
+```
+
+## groups that aren't all that different
+
+From Q26.8 "Frisbee throws".
+
+```{r}
+frisbee <- read.csv("Ch28_Frisbee_throws.csv")
+frisbee %>% 
+  ggplot(aes(x=Grip, y=Distance)) + geom_boxplot()
+```
+
+## The main question 
+
+The main question is $H_0: \mu_1 = \mu_2 = \cdots = \mu_k$ versus the negation (equivalently: all the $\alpha_i = 0$.) 
+
+In other words "is the variation among all the $y_{ij}$ due to the factor variable, or just due to random chance?". The analysis even follows this logic. 
+
+The variation among the $y_{ij}$ is quantified as:
+
+$$(N-1)\cdot s^2_y = \sum_{i=1}^k\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2$$
+
+We will eventually split this up into the "factor" part and the "random chance" part (like done in regression).
+
+## some gory details
+
+Build up from the inside out. For any $i$ and $j$ fixed:
+\begin{align*}
+\left( y_{ij} - \dbar{y} \right)^2 &= 
+\left( y_{ij} - \bar y_i + \bar y_i - \dbar{y} \right)^2\\
+\onslide<2->{&=\left(y_{ij} - \bar y_i\right)^2 + \left(\bar y_i - \dbar{y} \right)^2 +
+2\left(y_{ij} - \bar y_i\right)\left(\bar y_i - \dbar{y}\right)}
+\end{align*}
+
+\pause \pause Next, sum from $j=1$ to $n$ to get:
+$$\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2 
+=\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)^2 + \sum_{j=1}^n\left(\bar y_{i} - \dbar{y}\right)^2 +
+2\left(\bar y_{i} - \dbar{y}\right)\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)$$
+
+\pause Finally, sum from $i=1$ to $k$ and rearrange:
+$$\sum_{i=1}^k\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2 
+= \sum_{i=1}^kn\left(\bar y_{i} - \dbar{y}\right)^2 +  \sum_{i=1}^k\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)^2 $$
+
+## more details 
+
+\begin{align*}
+\sum_{i=1}^k\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2 
+&= \sum_{i=1}^kn\left(\bar y_{i} - \dbar{y}\right)^2 +  \sum_{i=1}^k\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)^2\\
+SS_{Total} \qquad &= \qquad SS_T \qquad + \qquad SS_E\end{align*}
+
+\pause Holding $SS_{Total}$ fixed, what would it mean for one or the other of $SS_T$ and $SS_E$ to be large?
+
+\pause It turns out we'll look at a ratio of $SS_T$ and $SS_E$ to make our final decision. 
+
+\pause From which family of distributions will $SS_T$ and $SS_E$ come from?
+
+## the $F$ distributions
+
+Call:
+$$MS_T = \frac{SSA}{k-1} \qquad \text{ and } \qquad MS_E = \frac{SSE}{N-k}$$
+
+\pause These are called "mean squares", and the ratio of mean squares will follow what is called an $F$ distribution, with $k-1$ and $N-k$ "degrees of freedom".
+
+\pause When the null hypothesis is true, $\frac{MS_T}{MS_E}$ lives near 1, and large values of this ratio give small p-values.
+
+## putting it all together
+
+All this information is concisely displayed in what is called the "analysis of variance" table (or ANOVA table, or AOV table). Here's the table for the Yeast example:
+
+```{r}
+yeast %>% 
+  aov(Activation.Times ~ Recipe, data = .) %>% 
+  summary
+```
+
+\pause And for the Frisbee example:
+
+```{r}
+frisbee %>% 
+  aov(Distance ~ Grip, data = .) %>% 
+  summary
+```
+
+
