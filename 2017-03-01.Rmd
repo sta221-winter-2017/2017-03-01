@@ -83,10 +83,12 @@ Build up from the inside out. For any $i$ and $j$ fixed:
 2\left(y_{ij} - \bar y_i\right)\left(\bar y_i - \dbar{y}\right)}
 \end{align*}
 
-\pause \pause Next, sum from $j=1$ to $n$ to get:
+\pause \pause Next, for any fixed $i$, sum from $j=1$ to $n$ to get:
 $$\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2 
 =\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)^2 + \sum_{j=1}^n\left(\bar y_{i} - \dbar{y}\right)^2 +
 2\left(\bar y_{i} - \dbar{y}\right)\sum_{j=1}^n\left(y_{ij} - \bar y_{i}\right)$$
+
+\pause The term on the right hand side is always 0!
 
 \pause Finally, sum from $i=1$ to $k$ and rearrange:
 $$\sum_{i=1}^k\sum_{j=1}^n \left(y_{ij} - \dbar{y}\right)^2 
@@ -107,8 +109,8 @@ SS_{Total} \qquad &= \qquad SS_T \qquad + \qquad SS_E\end{align*}
 
 ## the $F$ distributions
 
-Call:
-$$MS_T = \frac{SSA}{k-1} \qquad \text{ and } \qquad MS_E = \frac{SSE}{N-k}$$
+Call (updated notation to match book):
+$$MS_T = \frac{SS_T}{k-1} \qquad \text{ and } \qquad MS_E = \frac{SS_E}{N-k}$$
 
 \pause These are called "mean squares", and the ratio of mean squares will follow what is called an $F$ distribution, with $k-1$ and $N-k$ "degrees of freedom".
 
